@@ -4,7 +4,7 @@ var rowMajor = false;
 var msbendian = false;
 
 $(function() {
-  	matrix = createArray(16,16);
+  	matrix = createArray(34, 9);
   	updateTable();
 	initOptions();
 
@@ -76,7 +76,7 @@ function updateSummary() {
 function updateCode() {
 	$('#_output').show();
 	var bytes = generateByteArray();
-	var output = "const uint_8 data[] =\n{\n" + bytes + "\n};"
+	var output = "let grid: Grid = [\n" + bytes + "\n];"
 	$('#_output').html(output);
 	$('#_output').removeClass('prettyprinted');
 	prettyPrint();
@@ -86,49 +86,28 @@ function generateByteArray() {
 	var width = matrix[0].length;
 	var height = matrix.length;
 	var buffer = new Array(width * height);
-	var bytes = new Array((width * height) / 8);
 
-	// Column Major
-	var temp;
-	for (var x = 0; x < width; x++) {
-		for (var y = 0; y < height; y++) {
-			temp = matrix[y][x];
-			if (!temp) temp = 0;
-			// Row Major or Column Major?
-			if (!rowMajor) {
-				buffer[x * height + y] = temp;	
-			}
-			else {
-				buffer[y * width + x] = temp;
-			}
-			
-		}
-	}
+  let formatted = "";
 
-	// Read buffer 8-bits at a time
-	// and turn it into bytes
-	for (var i = 0; i < buffer.length; i+=8) {
-		var newByte = 0;
-		for (var j = 0; j < 8; j++) {
-            if (buffer[i+j]) {
-            	if (msbendian) {
-                	newByte |= 1 << (7-j);
-                }
-                else {
-                	newByte |= 1 << j;
-                }
-            }
-        }
-        bytes[i / 8] = newByte;
-	}
-
-	var formatted = bytes.map(function (x) {
-	    x = x + 0xFFFFFFFF + 1;  // twos complement
-	    x = x.toString(16); // to hex
-	    x = ("0"+x).substr(-2); // zero-pad to 8-digits
-	    x = "0x" + x;
-	    return x;
-	}).join(', ');
+  for (let col = width-1; col >= 0; col--) {
+    formatted += `  [ `;
+    //console.log(`cols: ${row.length}`)
+    for (let row = 0; row < height; row++) {
+      const cell = matrix[row][col];
+      if (cell == 1) {
+        formatted += '0xFF'
+      } else {
+        formatted += '0x00'
+      }
+      if (row+1 !=height) {
+        formatted +=',';
+      }
+    }
+    formatted += ']'
+    if (col!=0) {
+      formatted += ',\n';
+    }
+  }
 
 	return formatted;
 }
