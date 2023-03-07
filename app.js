@@ -50,6 +50,12 @@ function initOptions() {
 	$('#connectButton').click(connectSerial);
 	$('#generateButton').click(updateCode);
 	$('#sendButton').click(sendToDisplay);
+  $(document).on('input change', '#brightnessRange', function() {
+  //$('#brightnessRange').change(function() {
+    let brightness = $(this).val();
+    console.log("Brightness:", brightness);
+    command(port, BRIGHTNESS_CMD, brightness);
+  });
 
 	 $('#widthDropDiv li a').click(function () {
 	 	var width = parseInt($(this).html());
