@@ -172,17 +172,17 @@ body {
 }
 
 #_grid table tr td {
-  background-color: white;
+  background-color: #a9a9a9;
   padding:10px;
 }
 
-#_grid table tr td:hover, #_grid table tr td.on:hover {
+#_grid table tr td:hover, #_grid table tr td.off:hover {
   background-color: #c3c1ff;
   padding:10px;
 }
 
-#_grid table tr td.on {
-  background-color: #a9a9a9;
+#_grid table tr td.off {
+  background-color: white;
   padding:10px;
 }
 

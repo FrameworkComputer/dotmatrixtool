@@ -117,7 +117,7 @@ async function command(port, id, params) {
   writer.releaseLock();
 }
 
-function foo() {
+function prepareValsForDrawing() {
 	const width = matrix[0].length;
 	const height = matrix.length;
 
@@ -126,7 +126,7 @@ function foo() {
   for (let col = 0; col < width; col++) {
     for (let row = 0; row < height; row++) {
       const cell = matrix[row][col];
-      if (cell == 1) {
+      if (cell == 0) {
         const i = col + row * width;
         vals[Math.trunc(i/8)] |= 1 << i % 8;
       }
@@ -136,9 +136,8 @@ function foo() {
 }
 
 async function sendToDisplay() {
-  let vals = foo();
+  let vals = prepareValsForDrawing();
   console.log("Send bytes:", vals);
-  //command(port, SLEEP_CMD, [1]);
   command(port, DRAW_CMD, vals);
 }
 
@@ -200,12 +199,12 @@ function toggle(e) {
 	var y = $(this).data('j');
 
 	if (e.buttons == 1 && !e.ctrlKey) {
-		matrix[x][y] = 1;
-		$(this).addClass('on');		
+		matrix[x][y] = 0;
+		$(this).addClass('off');		
 	}
 	else if (e.buttons == 2 || (e.buttons == 1 && e.ctrlKey)) {			
-		matrix[x][y] = 0;
-		$(this).removeClass('on');	
+		matrix[x][y] = 1;
+		$(this).removeClass('off');	
 	}
 
   if (port) {
