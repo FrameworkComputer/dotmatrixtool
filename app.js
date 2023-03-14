@@ -117,6 +117,41 @@ async function command(port, id, params) {
   writer.releaseLock();
 }
 
+async function checkFirmwareVersion() {
+  const id = 0x20;
+  const params = [];
+
+  const writer = port.writable.getWriter();
+  const reader = port.readable.getReader();
+
+  let bytes = [0x32, 0xAC];
+  bytes = bytes.concat([id]);
+  bytes = bytes.concat(params);
+  console.log('Params:', bytes);
+
+  const data = new Uint8Array(bytes);
+  await writer.write(data);
+  // Allow the serial port to be closed later.
+  writer.releaseLock();
+
+  const { value, done } = await reader.read();
+  // Attention: Seems the variable name `value` cannot be changed!
+  const response = value;
+  console.log(`Done: ${done} Response:`, response);
+
+  const major = response[0];
+  const minor = (response[1] & 0xF0) >> 4;
+  const patch = response[1] & 0x0F;
+  const pre_release = response[2] == 1;
+
+  const fw_str = `Connected!<br>Device FW Version: ${major}.${minor}.${patch} Pre-release: ${pre_release}`;
+  console.log(fw_str);
+  $('#fw-version').html(fw_str);
+
+  // Allow the serial port to be closed later.
+  reader.releaseLock();
+}
+
 function prepareValsForDrawing() {
 	const width = matrix[0].length;
 	const height = matrix.length;
@@ -153,6 +188,7 @@ async function connectSerial() {
     await port.open({ baudRate: 115200 });
   }
 
+  await checkFirmwareVersion();
 }
 
 function updateCode() {
