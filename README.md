@@ -9,9 +9,11 @@ Blog post at http://www.stefangordon.com/build-icons-and-characters-for-monochro
 ## Framework Lotus LED Matrix
 
 This webapp can directly connect to the LED matrix input module.
-You need to be running (browser based on) Chrome.
+You need to be running (a browser based on) Chrome.
 
-First use the connect button to connect and then drawing on the screen will
+To start, simply open the index.html - there is no server to run.
+
+Then use the connect button to connect. Drawing on the screen should
 automatically update the LED matrix.
 
 Click and drag to draw, CTRL+click to erase.
