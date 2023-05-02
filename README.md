@@ -6,7 +6,7 @@ Use it live at http://dotmatrixtool.com
 
 Blog post at http://www.stefangordon.com/build-icons-and-characters-for-monochrome-lcd-matrix-displays/
 
-## Framework Lotus LED Matrix
+## Framework Laptop 16 - LED Matrix Input Module
 
 This webapp can directly connect to the LED matrix input module.
 You need to be running (a browser based on) Chrome.
