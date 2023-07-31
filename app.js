@@ -38,13 +38,21 @@ function updateTable() {
 	$('#_grid_left').append(populateTable(null, height, width, ""));
 
 	// events
-	$table.on("mousedown", "td", toggle);
-    $table.on("mouseenter", "td", toggle);
+	$table.on("mousedown", "td", toggleLeft);
+    $table.on("mouseenter", "td", toggleLeft);
     $table.on("dragstart", function() { return false; });
+
+	$('#_grid_right').html('');
+	$('#_grid_right').append(populateTable(null, height, width, ""));
+
+	// events
+	$table.on("mousedown", "td", toggleRight);
+  $table.on("mouseenter", "td", toggleRight);
+  $table.on("dragstart", function() { return false; });
 }
 
 function initOptions() {
-	$('#clearLeftBtn').click(function() { matrix = createArray(matrix.length,matrix[0].length); updateTable(); $('#_output').hide(); });
+	$('#clearLeftBtn').click(function() { matrix = createArray(matrix.length,matrix[0].length); updateTable(); });
 	$('#connectLeftBtn').click(connectSerial);
 	//$('#sendButton').click(sendToDisplay);
   $(document).on('input change', '#brightnessRange', function() {
@@ -144,17 +152,24 @@ async function connectSerial() {
   await checkFirmwareVersion();
 }
 
-function toggle(e) {
-	var x = $(this).data('i');
-	var y = $(this).data('j');
+function toggleLeft(e) {
+  return toggle($(this), e);
+}
+function toggleRight(e) {
+  return toggle($(this), e);
+}
+
+function toggle(that, e) {
+	var x = that.data('i');
+	var y = that.data('j');
 
 	if (e.buttons == 1 && !e.ctrlKey) {
 		matrix[x][y] = 0;
-		$(this).addClass('off');		
+		that.addClass('off');		
 	}
 	else if (e.buttons == 2 || (e.buttons == 1 && e.ctrlKey)) {			
 		matrix[x][y] = 1;
-		$(this).removeClass('off');	
+		that.removeClass('off');	
 	}
 
   if (port) {
