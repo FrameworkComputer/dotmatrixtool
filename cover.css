@@ -26,11 +26,9 @@ a:hover {
 
 html,
 body {
-  height: 100%;
   background-color: #333;
 }
 body {
-  color: #fff;
   text-align: center;
   font-family: Roboto Mono;
   font-weight: 400;
@@ -38,7 +36,6 @@ body {
 
 /* Extra markup and styles for table-esque vertical and horizontal centering */
 .site-wrapper {
-  display: table;
   width: 100%;
   height: 100%; /* For at least Firefox */
   min-height: 100%;
@@ -46,19 +43,39 @@ body {
           box-shadow: inset 0 0 100px rgba(0,0,0,.5);
 }
 .site-wrapper-inner {
-  display: table-cell;
-  vertical-align: top;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
 }
 .cover-container {
-  margin-right: auto;
-  margin-left: auto;
+  display: flex;
+  flex-direction: row;
+  padding-top: 10px;
+  justify-content: start;
 }
 
-/* Padding for spacing */
-.inner {
-  padding: 30px;
+#instructions {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  align-items: center;
 }
+#brightnessRange {
+  display: inline;
+  width: auto;
+}
+#matrix {
+  flex-grow: 2;
 
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: stretch;
+}
+#controls {
+  text-align: start;
+}
 
 /*
  * Header
@@ -158,8 +175,7 @@ body {
 
 @media (min-width: 992px) {
   .masthead,
-  .mastfoot,
-  .cover-container {
+  .mastfoot {
     width: 700px;
   }
 }
@@ -168,7 +184,6 @@ body {
   border-collapse: separate;
   border-spacing: 2px;
   cursor:crosshair;
-  margin:auto;
 }
 
 #_grid table tr td {
@@ -190,7 +205,9 @@ body {
   text-align: left;
 }
 
+.footer {
+}
 .footer>div {
   text-align: center;
-  margin-top:20px;
+  padding-top: 20px;
 }

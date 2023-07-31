@@ -32,15 +32,6 @@
   </head>
 
   <body>
-    <!--
-    <nav class="navbar navbar-inverse navbar-fixed-top"> <div class="container">
-        <div class="navbar-header">
-          <a class="navbar-brand" href="#">Dot Matrix Tool</a>
-        </div>
-      </div>
-    </nav>
-    -->
-
     <!-- Body Contents -->
     <div class="site-wrapper">
 
@@ -48,132 +39,57 @@
 
         <div class="cover-container">
 
+          <div id="instructions" class="item">
+            <div class="text-muted">
+              <p>Instructions</p>
+              <!-- instructions -->
+              <p style="text-align: start;">
+                Left mouse button to draw.<br>
+                Right mouse button (or ctrl+left) to erase.
 
-          <div class="inner cover">
-            <p id="fw-version" class="text-muted"></p>
+              </p>
+              <p>
+                Steps:
+              </p>
 
-            <!-- instructions -->
-            <p class="text-muted">Left mouse button to draw.  Right mouse button (or ctrl+left) to erase.</p>
+              <ol style="text-align: start;">
+                <li>Connect Module</li>
+                <li>Click Connect Button</li>
+                <li>Allow connection and select port<br>(something like ACM0 or COM3)</li>
+                <li>Start drawing</li>
+              </ol>
+            </div>
 
-            <!-- Grid bits -->
-            <!--<div class="col-xs-12" style="height:55px;"></div>-->
-            <div id="_grid" oncontextmenu="return false;"></div>
-            <div class="col-xs-12" style="height:20px;"></div>
+            <div id="controls" class="text-muted">
+              <p style="text-align: center;">Device Information</p>
+              <p id="fw-version">Nothing connected</p>
+              <div class="col-xs-12" style="height:20px;"></div>
 
-            <!-- Options -->
-            <div class="btn-group">
               <button type="button" class="btn btn-default" id="connectButton">Connect</button>
-            </div>
-            <div class="btn-group">
-              Brightness:
+              <div class="col-xs-12" style="height:20px;"></div>
+
+              <p>Brightness:
               <input type="range" id="brightnessRange" min="0" max="255">
-            </div>
-            <!--
-            <div class="btn-group">
-              <button type="button" class="btn btn-default" id="sendButton">Send</button>
-            </div>
-            <div class="btn-group">
-              <button type="button" class="btn btn-default" id="generateButton">Generate</button>
-            </div>
-            -->
-            <div class="btn-group">
+              </p>
+              <div class="col-xs-12" style="height:20px;"></div>
+
               <button type="button" class="btn btn-default" id="clearButton">Clear</button>
+              <div class="col-xs-12" style="height:20px;"></div>
+              <!--<button type="button" class="btn btn-default" id="sendButton">Send</button>-->
             </div>
-
-            <br/>
-            <div class="col-xs-12" style="height:10px;"></div>
-
-            <!--
-            <div class="btn-group">
-              <div class="dropdown" id="widthDropDiv">
-                <button class="btn btn-default dropdown-toggle" type="button" id="widthDrop" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                  Width
-                  <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="widthDrop">
-                  <li><a href="#">4</a></li>
-                  <li><a href="#">6</a></li>
-                  <li><a href="#">8</a></li>
-                  <li><a href="#">9</a></li>
-                  <li><a href="#">16</a></li>
-                  <li><a href="#">24</a></li>
-                  <li><a href="#">32</a></li>
-                </ul>
-              </div>
-            </div>
-            <div class="btn-group">
-              <div class="dropdown" id="heightDropDiv">
-                <button class="btn btn-default dropdown-toggle" type="button" id="heightDrop" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                  Height
-                  <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="heightDrop">
-                  <li><a href="#">8</a></li>
-                  <li><a href="#">16</a></li>
-                  <li><a href="#">24</a></li>
-                  <li><a href="#">32</a></li>
-                  <li><a href="#">34</a></li>
-                </ul>
-              </div>
-            </div>
-            -->
-
-            <!-- Options - Byte Order -->
-            <!--
-            <div class="btn-group">
-              <div class="dropdown" id="byteDropDiv">
-                <button class="btn btn-default dropdown-toggle" type="button" id="byteDrop" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                  Byte Order
-                  <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="heightDrop">
-                  <li><a href="#">Row Major</a></li>
-                  <li><a href="#">Column Major</a></li>
-                </ul>
-              </div>
-            </div>
-            -->
-
-            <!-- Options - Endian -->
-            <!--
-            <div class="btn-group">
-              <div class="dropdown" id="endianDropDiv">
-                <button class="btn btn-default dropdown-toggle" type="button" id="endianDrop" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                  Endian
-                  <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="heightDrop">
-                  <li><a href="#">Big Endian (MSB)</a></li>
-                  <li><a href="#">Little Endian (LSB)</a></li>
-                </ul>
-              </div>
-            </div>
-            -->
-
-
-
-            <!-- Summary -->
-            <!--
-            <div class="col-xs-12" style="height:20px;"></div>
-            <div id ="_summary"></div>
-            -->
-
-            <!-- Output -->
-            <!--
-            <div class="col-xs-12" style="height:20px;"></div>
-            <div>
-              <pre id="_output" class="prettyprint lang-c"></pre>
-            </div>
-            -->
           </div>
 
-          <!-- footer -->
-          <div class="col-xs-12" style="height:20px;"></div>
-          <footer class="footer">
-            <p class="text-muted">Created By Daniel Schaefer at <a href="https://frame.work">Framework</a>. Forked from <a href="http://www.stefangordon.com">Stefan Gordon's</a> <a href="https://github.com/stefangordon/dotmatrixtool">dotmatrixtool</a></p>
-          </footer>
+          <div id="matrix" class="cover item">
+            <!-- Grid bits -->
+            <div id="_grid" oncontextmenu="return false;"></div>
+          </div>
 
         </div>
+
+        <!-- footer -->
+        <footer class="footer">
+          <p class="text-muted">Created By Daniel Schaefer at <a href="https://frame.work">Framework</a>. Forked from <a href="http://www.stefangordon.com">Stefan Gordon's</a> <a href="https://github.com/stefangordon/dotmatrixtool">dotmatrixtool</a></p>
+        </footer>
 
       </div>
 
