@@ -18,41 +18,53 @@ const SetPixelColumn = 0x16;
 const FlushFramebuffer = 0x17;
 const VERSION_CMD = 0x20;
 
-var matrix;
+const WIDTH = 9;
+const HEIGHT = 34;
+
+let matrices = {
+  'Left': null,
+  'Right': null,
+};
 var $table;
 var rowMajor = false;
 var msbendian = false;
-let port = null;
+let ports = {
+  'Left': null,
+  'Right': null,
+};
+let port;
 
 $(function() {
-  matrix = createArray(34, 9);
-  updateTable();
+  matrices['Left'] = createArray(HEIGHT, WIDTH);
+  matrices['Right'] = createArray(HEIGHT, WIDTH);
+  updateTable('Left');
+  updateTable('Right');
   initOptions();
 });
 
-function updateTable() {
-	var width = matrix[0].length;
-	var height = matrix.length;
+function updateTable(pos) {
+  if (pos === 'Left') {
+    $('#_grid_left').html('');
+    $('#_grid_left').append(populateTable(null, HEIGHT, WIDTH, ""));
 
-	$('#_grid_left').html('');
-	$('#_grid_left').append(populateTable(null, height, width, ""));
+    // events
+    $table.on("mousedown", "td", toggleLeft);
+      $table.on("mouseenter", "td", toggleLeft);
+      $table.on("dragstart", function() { return false; });
+  } else if (pos === 'Right') {
+    $('#_grid_right').html('');
+    $('#_grid_right').append(populateTable(null, HEIGHT, WIDTH, ""));
 
-	// events
-	$table.on("mousedown", "td", toggleLeft);
-    $table.on("mouseenter", "td", toggleLeft);
+    // events
+    $table.on("mousedown", "td", toggleRight);
+    $table.on("mouseenter", "td", toggleRight);
     $table.on("dragstart", function() { return false; });
-
-	$('#_grid_right').html('');
-	$('#_grid_right').append(populateTable(null, height, width, ""));
-
-	// events
-	$table.on("mousedown", "td", toggleRight);
-  $table.on("mouseenter", "td", toggleRight);
-  $table.on("dragstart", function() { return false; });
+  }
 }
 
 function initOptions() {
-	$('#clearLeftBtn').click(function() { matrix = createArray(matrix.length,matrix[0].length); updateTable(); });
+	$('#clearLeftBtn').click(function() { matrices['Left'] = createArray(HEIGHT, WIDTH); updateTable('Left'); });
+	$('#clearRightBtn').click(function() { matrices['Right'] = createArray(HEIGHT, WIDTH); updateTable('Right'); });
 	$('#connectLeftBtn').click(connectSerial);
 	//$('#sendButton').click(sendToDisplay);
   $(document).on('input change', '#brightnessRange', function() {
@@ -113,17 +125,14 @@ async function checkFirmwareVersion() {
   reader.releaseLock();
 }
 
-function prepareValsForDrawing() {
-	const width = matrix[0].length;
-	const height = matrix.length;
+function prepareValsForDrawing(pos) {
+  let vals = new Array(HEIGHT).fill(0);
 
-  let vals = new Array(39).fill(0);
-
-  for (let col = 0; col < width; col++) {
-    for (let row = 0; row < height; row++) {
-      const cell = matrix[row][col];
+  for (let col = 0; col < WIDTH; col++) {
+    for (let row = 0; row < HEIGHT; row++) {
+      const cell = matrices[pos][row][col];
       if (cell == 0) {
-        const i = col + row * width;
+        const i = col + row * WIDTH;
         vals[Math.trunc(i/8)] |= 1 << i % 8;
       }
     }
@@ -131,8 +140,8 @@ function prepareValsForDrawing() {
   return vals;
 }
 
-async function sendToDisplay() {
-  let vals = prepareValsForDrawing();
+async function sendToDisplay(pos) {
+  let vals = prepareValsForDrawing(pos);
   console.log("Send bytes:", vals);
   command(port, DRAW_CMD, vals);
 }
@@ -153,27 +162,27 @@ async function connectSerial() {
 }
 
 function toggleLeft(e) {
-  return toggle($(this), e);
+  return toggle($(this), e, 'Left');
 }
 function toggleRight(e) {
-  return toggle($(this), e);
+  return toggle($(this), e, 'Right');
 }
 
-function toggle(that, e) {
+function toggle(that, e, pos) {
 	var x = that.data('i');
 	var y = that.data('j');
 
 	if (e.buttons == 1 && !e.ctrlKey) {
-		matrix[x][y] = 0;
+		matrices[pos][x][y] = 0;
 		that.addClass('off');		
 	}
 	else if (e.buttons == 2 || (e.buttons == 1 && e.ctrlKey)) {			
-		matrix[x][y] = 1;
+		matrices[pos][x][y] = 1;
 		that.removeClass('off');	
 	}
 
   if (port) {
-    sendToDisplay();
+    sendToDisplay(pos);
   }
 
 	return false;
