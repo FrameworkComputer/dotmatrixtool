@@ -12,6 +12,12 @@ Click and drag to draw, CTRL+click to erase.
 
 Brightness can also be adjusted.
 
+###### More Information
+
+- [Framework Laptop 16](https://frame.work/products/laptop16-diy-amd-7040)
+- [LED Matrix Firmware](https://github.com/FrameworkComputer/inputmodule-rs)
+- [LED Matrix Hardware](https://github.com/FrameworkComputer/inputmodules)
+
 ###### Dot Matrix Tool
 
 This repository is based on code from https://github.com/stefangordon/dotmatrixtool.
