@@ -18,48 +18,79 @@ const SetPixelColumn = 0x16;
 const FlushFramebuffer = 0x17;
 const VERSION_CMD = 0x20;
 
-var matrix;
-var $table;
+var matrix_left;
+var matrix_right;
+var $table_left;
+var $table_right;
 var rowMajor = false;
 var msbendian = false;
-let port = null;
+let portLeft = null;
+let portRight = null;
+let swap = false;
 
 $(function() {
-  matrix = createArray(34, 9);
-  updateTable();
+  matrix_left = createArray(34, 9);
+  matrix_right = createArray(34, 9);
+  updateTableLeft();
+  updateTableRight();
   initOptions();
 });
 
-function updateTable() {
-	var width = matrix[0].length;
-	var height = matrix.length;
+function updateTableLeft() {
+	var width = matrix_left[0].length;
+	var height = matrix_left.length;
 
+  $table_left = populateTable(null, height, width, "");
 	$('#_grid_left').html('');
-	$('#_grid_left').append(populateTable(null, height, width, ""));
+	$('#_grid_left').append($table_left);
 
 	// events
-	$table.on("mousedown", "td", toggleLeft);
-    $table.on("mouseenter", "td", toggleLeft);
-    $table.on("dragstart", function() { return false; });
+	$table_left.on("mousedown", "td", toggleLeft);
+    $table_left.on("mouseenter", "td", toggleLeft);
+    $table_left.on("dragstart", function() { return false; });
+}
 
+function updateTableRight() {
+	var width = matrix_right[0].length;
+	var height = matrix_right.length;
+
+  $table_right = populateTable(null, height, width, "");
 	$('#_grid_right').html('');
-	$('#_grid_right').append(populateTable(null, height, width, ""));
+	$('#_grid_right').append($table_right);
 
 	// events
-	$table.on("mousedown", "td", toggleRight);
-  $table.on("mouseenter", "td", toggleRight);
-  $table.on("dragstart", function() { return false; });
+	$table_right.on("mousedown", "td", toggleRight);
+  $table_right.on("mouseenter", "td", toggleRight);
+  $table_right.on("dragstart", function() { return false; });
 }
 
 function initOptions() {
-	$('#clearLeftBtn').click(function() { matrix = createArray(matrix.length,matrix[0].length); updateTable(); });
-	$('#connectLeftBtn').click(connectSerial);
+	$('#clearLeftBtn').click(function() {
+    matrix_left = createArray(matrix_left.length, matrix_left[0].length);
+    updateTableLeft();
+    sendToDisplayLeft(true);
+    sendToDisplayRight(true);
+  });
+	$('#clearRightBtn').click(function() {
+    matrix_right = createArray(matrix_right.length, matrix_right[0].length);
+    updateTableRight();
+    sendToDisplayLeft(true);
+    sendToDisplayRight(true);
+  });
+	$('#connectLeftBtn').click(connectSerialLeft);
+	$('#connectRightBtn').click(connectSerialRight);
+	$('#swapBtn').click(async function() {
+    swap = !swap;
+    await sendToDisplayLeft(true);
+    await sendToDisplayRight(true);
+  });
 	//$('#sendButton').click(sendToDisplay);
   $(document).on('input change', '#brightnessRange', function() {
   //$('#brightnessRange').change(function() {
     let brightness = $(this).val();
     //console.log("Brightness:", brightness);
-    command(port, BRIGHTNESS_CMD, brightness);
+    command(portLeft, BRIGHTNESS_CMD, brightness);
+    command(portRight, BRIGHTNESS_CMD, brightness);
   });
 }
 
@@ -78,7 +109,7 @@ async function command(port, id, params) {
   writer.releaseLock();
 }
 
-async function checkFirmwareVersion() {
+async function checkFirmwareVersion(port, side) {
   const id = 0x20;
   const params = [];
 
@@ -107,21 +138,21 @@ async function checkFirmwareVersion() {
 
   const fw_str = `Connected!<br>Device FW Version: ${major}.${minor}.${patch} Pre-release: ${pre_release}`;
   console.log(fw_str);
-  $('#fw-version').html(fw_str);
+  $(`#fw-version-${side}`).html(fw_str);
 
   // Allow the serial port to be closed later.
   reader.releaseLock();
 }
 
-function prepareValsForDrawing() {
-	const width = matrix[0].length;
-	const height = matrix.length;
+function prepareValsForDrawingLeft() {
+	const width = matrix_left[0].length;
+	const height = matrix_left.length;
 
   let vals = new Array(39).fill(0);
 
   for (let col = 0; col < width; col++) {
     for (let row = 0; row < height; row++) {
-      const cell = matrix[row][col];
+      const cell = matrix_left[row][col];
       if (cell == 0) {
         const i = col + row * width;
         vals[Math.trunc(i/8)] |= 1 << i % 8;
@@ -131,49 +162,108 @@ function prepareValsForDrawing() {
   return vals;
 }
 
-async function sendToDisplay() {
-  let vals = prepareValsForDrawing();
-  console.log("Send bytes:", vals);
-  command(port, DRAW_CMD, vals);
+function prepareValsForDrawingRight() {
+	const width = matrix_right[0].length;
+	const height = matrix_right.length;
+
+  let vals = new Array(39).fill(0);
+
+  for (let col = 0; col < width; col++) {
+    for (let row = 0; row < height; row++) {
+      const cell = matrix_right[row][col];
+      if (cell == 0) {
+        const i = col + row * width;
+        vals[Math.trunc(i/8)] |= 1 << i % 8;
+      }
+    }
+  }
+  return vals;
 }
 
-async function connectSerial() {
-  port = await navigator.serial.requestPort();
+async function sendToDisplayLeft(recurse) {
+  let vals = prepareValsForDrawingLeft();
+  if (swap) {
+    console.log('swapped left to right');
+    vals = prepareValsForDrawingRight();
+  }
+  console.log("Send bytes left:", vals);
+  command(portLeft, DRAW_CMD, vals);
+}
+async function sendToDisplayRight(recurse) {
+  let vals = prepareValsForDrawingRight();
+  if (swap) {
+    console.log('swapped right to left');
+    vals = prepareValsForDrawingLeft();
+  }
+  console.log("Send bytes right:", vals);
+  command(portRight, DRAW_CMD, vals);
+}
 
-  const { usbProductId, usbVendorId } = port.getInfo();
-  console.log(`Selected`, port);
+async function connectSerialLeft() {
+  portLeft = await navigator.serial.requestPort();
+
+  const { usbProductId, usbVendorId } = portLeft.getInfo();
+  console.log(`Selected`, portLeft);
   console.log(`VID:PID ${usbVendorId}:${usbProductId}`);
 
-  if (port.readable === null || port.writeable === null) {
-    console.log("Opening port");
-    await port.open({ baudRate: 115200 });
+  if (portLeft.readable === null || portLeft.writeable === null) {
+    console.log("Opening portLeft");
+    await portLeft.open({ baudRate: 115200 });
   }
 
-  await checkFirmwareVersion();
+  await checkFirmwareVersion(portLeft, 'left');
+}
+
+async function connectSerialRight() {
+  portRight = await navigator.serial.requestPort();
+
+  const { usbProductId, usbVendorId } = portRight.getInfo();
+  console.log(`Selected`, portRight);
+  console.log(`VID:PID ${usbVendorId}:${usbProductId}`);
+
+  if (portRight.readable === null || portRight.writeable === null) {
+    console.log("Opening portRight");
+    await portRight.open({ baudRate: 115200 });
+  }
+
+  await checkFirmwareVersion(portRight, 'right');
 }
 
 function toggleLeft(e) {
-  return toggle($(this), e);
-}
-function toggleRight(e) {
-  return toggle($(this), e);
-}
-
-function toggle(that, e) {
-	var x = that.data('i');
-	var y = that.data('j');
+	var x = $(this).data('i');
+	var y = $(this).data('j');
 
 	if (e.buttons == 1 && !e.ctrlKey) {
-		matrix[x][y] = 0;
-		that.addClass('off');		
+		matrix_left[x][y] = 0;
+		$(this).addClass('off');		
 	}
 	else if (e.buttons == 2 || (e.buttons == 1 && e.ctrlKey)) {			
-		matrix[x][y] = 1;
-		that.removeClass('off');	
+		matrix_left[x][y] = 1;
+		$(this).removeClass('off');	
 	}
 
-  if (port) {
-    sendToDisplay();
+  if (portLeft) {
+    sendToDisplayLeft(true);
+  }
+
+	return false;
+}
+
+function toggleRight(e) {
+	var x = $(this).data('i');
+	var y = $(this).data('j');
+
+	if (e.buttons == 1 && !e.ctrlKey) {
+		matrix_right[x][y] = 0;
+		$(this).addClass('off');		
+	}
+	else if (e.buttons == 2 || (e.buttons == 1 && e.ctrlKey)) {			
+		matrix_right[x][y] = 1;
+		$(this).removeClass('off');	
+	}
+
+  if (portRight) {
+    sendToDisplayRight(true);
   }
 
 	return false;
@@ -190,8 +280,7 @@ function populateTable(table, rows, cells, content) {
         }
         table.appendChild(row);        
     }
-    $table = $(table);
-    return table;
+    return $(table);
 }
 
 // (height, width)
