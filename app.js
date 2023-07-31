@@ -18,6 +18,16 @@ const SetPixelColumn = 0x16;
 const FlushFramebuffer = 0x17;
 const VERSION_CMD = 0x20;
 
+const WIDTH = 9;
+const HEIGHT = 34;
+
+const PATTERNS = [
+  'Custom',
+  'Blank',
+  'Full',
+  'Checkerboard',
+];
+
 var matrix_left;
 var matrix_right;
 var $table_left;
@@ -34,13 +44,62 @@ $(function() {
   updateTableLeft();
   updateTableRight();
   initOptions();
+
+  for (pattern of PATTERNS) {
+    $("#select-left").append(`<option value="${pattern}">${pattern}</option>`);
+    $("#select-left").on("change", async function() {
+      if (pattern == 'Custom') return;
+      drawPattern(matrix_left, $(this).val(), 'left');
+      await sendToDisplayLeft(true);
+      await sendToDisplayRight(true);
+    });
+
+    $("#select-right").append(`<option value="${pattern}">${pattern}</option>`);
+    $("#select-right").on("change", async function() {
+      if (pattern == 'Custom') return;
+      drawPattern(matrix_right, $(this).val(), 'right');
+      await sendToDisplayLeft(true);
+      await sendToDisplayRight(true);
+    });
+  }
 });
+
+function drawPattern(matrix, pattern, pos) {
+  for (let col = 0; col < WIDTH; col++) {
+    for (let row = 0; row < HEIGHT; row++) {
+      if (pattern == 'Blank') {
+        matrix[row][col] = 1;
+      } else if (pattern == 'Full') {
+        matrix[row][col] = 0;
+      } else if (pattern == 'Checkerboard') {
+        if (row % 2 == 0)
+          matrix[row][col] = col % 2 == 0;
+        else
+          matrix[row][col] = (col+1) % 2 == 0;
+      }
+    }
+  }
+  updateMatrix(matrix, pos);
+}
+
+function updateMatrix(matrix, pos) {
+  for (let col = 0; col < WIDTH; col++) {
+    for (let row = 0; row < HEIGHT; row++) {
+      let foo = $(`#${pos}-${row}-${col}`);
+      if (matrix[row][col]) {
+        foo.removeClass('off');
+      } else {
+        foo.addClass('off');
+      }
+    }
+  }
+}
 
 function updateTableLeft() {
 	var width = matrix_left[0].length;
 	var height = matrix_left.length;
 
-  $table_left = populateTable(null, height, width, "");
+  $table_left = populateTable(null, height, width, "left");
 	$('#_grid_left').html('');
 	$('#_grid_left').append($table_left);
 
@@ -54,7 +113,7 @@ function updateTableRight() {
 	var width = matrix_right[0].length;
 	var height = matrix_right.length;
 
-  $table_right = populateTable(null, height, width, "");
+  $table_right = populateTable(null, height, width, "right");
 	$('#_grid_right').html('');
 	$('#_grid_right').append($table_right);
 
@@ -269,7 +328,7 @@ function toggleRight(e) {
 	return false;
 }
 
-function populateTable(table, rows, cells, content) {
+function populateTable(table, rows, cells, pos) {
     if (!table) table = document.createElement('table');
     for (var i = 0; i < rows; ++i) {
         var row = document.createElement('tr');
@@ -277,6 +336,7 @@ function populateTable(table, rows, cells, content) {
             row.appendChild(document.createElement('td'));
             $(row.cells[j]).data('i', i);
             $(row.cells[j]).data('j', j);
+            $(row.cells[j]).attr('id', `${pos}-${i}-${j}`);
         }
         table.appendChild(row);        
     }
