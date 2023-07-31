@@ -65,7 +65,9 @@
               <p id="fw-version">Nothing connected</p>
               <div class="col-xs-12" style="height:20px;"></div>
 
-              <button type="button" class="btn btn-default" id="connectButton">Connect</button>
+              <button type="button" class="btn btn-default" id="connectLeftBtn">Connect Left</button>
+              <button type="button" class="btn btn-default" id="connectRightBtn">Connect Right</button>
+              <button type="button" class="btn btn-default" id="swapBtn">Swap</button>
               <div class="col-xs-12" style="height:20px;"></div>
 
               <p>Brightness:
@@ -73,7 +75,8 @@
               </p>
               <div class="col-xs-12" style="height:20px;"></div>
 
-              <button type="button" class="btn btn-default" id="clearButton">Clear</button>
+              <button type="button" class="btn btn-default" id="clearLeftBtn">Clear Left</button>
+              <button type="button" class="btn btn-default" id="clearRightBtn">Clear Right</button>
               <div class="col-xs-12" style="height:20px;"></div>
               <!--<button type="button" class="btn btn-default" id="sendButton">Send</button>-->
             </div>
@@ -81,7 +84,8 @@
 
           <div id="matrix" class="cover item">
             <!-- Grid bits -->
-            <div id="_grid" oncontextmenu="return false;"></div>
+            <div class="_grid" id="_grid_left" oncontextmenu="return false;"></div>
+            <div class="_grid" id="_grid_right" oncontextmenu="return false;"></div>
           </div>
 
         </div>

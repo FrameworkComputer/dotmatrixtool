@@ -176,23 +176,23 @@ body {
   }
 }
 
-#_grid table {
+._grid table {
   border-collapse: separate;
   border-spacing: 2px;
   cursor:crosshair;
 }
 
-#_grid table tr td {
+._grid table tr td {
   background-color: #a9a9a9;
   padding:10px;
 }
 
-#_grid table tr td:hover, #_grid table tr td.off:hover {
+._grid table tr td:hover, ._grid table tr td.off:hover {
   background-color: #c3c1ff;
   padding:10px;
 }
 
-#_grid table tr td.off {
+._grid table tr td.off {
   background-color: white;
   padding:10px;
 }

@@ -34,8 +34,8 @@ function updateTable() {
 	var width = matrix[0].length;
 	var height = matrix.length;
 
-	$('#_grid').html('');
-	$('#_grid').append(populateTable(null, height, width, ""));
+	$('#_grid_left').html('');
+	$('#_grid_left').append(populateTable(null, height, width, ""));
 
 	// events
 	$table.on("mousedown", "td", toggle);
@@ -44,8 +44,8 @@ function updateTable() {
 }
 
 function initOptions() {
-	$('#clearButton').click(function() { matrix = createArray(matrix.length,matrix[0].length); updateTable(); $('#_output').hide(); });
-	$('#connectButton').click(connectSerial);
+	$('#clearLeftBtn').click(function() { matrix = createArray(matrix.length,matrix[0].length); updateTable(); $('#_output').hide(); });
+	$('#connectLeftBtn').click(connectSerial);
 	//$('#sendButton').click(sendToDisplay);
   $(document).on('input change', '#brightnessRange', function() {
   //$('#brightnessRange').change(function() {
