@@ -25,11 +25,9 @@ var msbendian = false;
 let port = null;
 
 $(function() {
-  	matrix = createArray(34, 9);
-  	updateTable();
-	initOptions();
-
-	$('#_output').hide();
+  matrix = createArray(34, 9);
+  updateTable();
+  initOptions();
 });
 
 function updateTable() {
@@ -48,58 +46,13 @@ function updateTable() {
 function initOptions() {
 	$('#clearButton').click(function() { matrix = createArray(matrix.length,matrix[0].length); updateTable(); $('#_output').hide(); });
 	$('#connectButton').click(connectSerial);
-	$('#generateButton').click(updateCode);
-	$('#sendButton').click(sendToDisplay);
+	//$('#sendButton').click(sendToDisplay);
   $(document).on('input change', '#brightnessRange', function() {
   //$('#brightnessRange').change(function() {
     let brightness = $(this).val();
-    console.log("Brightness:", brightness);
+    //console.log("Brightness:", brightness);
     command(port, BRIGHTNESS_CMD, brightness);
   });
-
-	 $('#widthDropDiv li a').click(function () {
-	 	var width = parseInt($(this).html());
-	 	var height = matrix.length;
-        matrix = createArray(height, width);
-        updateTable();
-        updateSummary();
-     });
-
-     $('#heightDropDiv li a').click(function () {
-	 	var width = matrix[0].length;
-	 	var height = parseInt($(this).html());
-        matrix = createArray(height, width);
-        updateTable();
-        updateSummary();
-     });
-
-     $('#byteDropDiv li a').click(function () {
-	 	var selection = $(this).html();
-        rowMajor = selection.startsWith("Row");  
-        updateSummary();      	
-     });
-
-     $('#endianDropDiv li a').click(function () {
-	 	var selection = $(this).html();
-        msbendian = selection.startsWith("Big");  
-        updateSummary();      	
-     });
-
-     updateSummary();
-}
-
-function updateSummary() {
-	var width = matrix[0].length;
-	var height = matrix.length;
-	var summary = width + "px by " + height + "px, ";
-
-	if (rowMajor) summary += "row major, ";
-	else summary += "column major, ";
-
-	if (msbendian) summary += "big endian.";
-	else summary += "little endian.";
-
-	$('#_summary').html(summary);
 }
 
 async function command(port, id, params) {
@@ -189,45 +142,6 @@ async function connectSerial() {
   }
 
   await checkFirmwareVersion();
-}
-
-function updateCode() {
-	$('#_output').show();
-	var bytes = generateByteArray();
-	var output = "let grid: Grid = [\n" + bytes + "\n];"
-	$('#_output').html(output);
-	$('#_output').removeClass('prettyprinted');
-	prettyPrint();
-}
-
-function generateByteArray() {
-	var width = matrix[0].length;
-	var height = matrix.length;
-	var buffer = new Array(width * height);
-
-  let formatted = "";
-
-  for (let col = width-1; col >= 0; col--) {
-    formatted += `  [ `;
-    //console.log(`cols: ${row.length}`)
-    for (let row = 0; row < height; row++) {
-      const cell = matrix[row][col];
-      if (cell == 1) {
-        formatted += '0xFF'
-      } else {
-        formatted += '0x00'
-      }
-      if (row+1 !=height) {
-        formatted +=',';
-      }
-    }
-    formatted += ']'
-    if (col!=0) {
-      formatted += ',\n';
-    }
-  }
-
-	return formatted;
 }
 
 function toggle(e) {
