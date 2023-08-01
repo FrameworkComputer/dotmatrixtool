@@ -18,6 +18,21 @@ const SetPixelColumn = 0x16;
 const FlushFramebuffer = 0x17;
 const VERSION_CMD = 0x20;
 
+const WIDTH = 9;
+const HEIGHT = 34;
+
+const PATTERNS = [
+  'Custom',
+  'Blank',
+  'Full',
+  'Checkerboard',
+  'Double Checkerboard',
+  'Every 2nd Row',
+  'Every 3rd Row',
+  'Every 2nd Col',
+  'Every 3rd Col',
+];
+
 var matrix_left;
 var matrix_right;
 var $table_left;
@@ -34,13 +49,73 @@ $(function() {
   updateTableLeft();
   updateTableRight();
   initOptions();
+
+  for (pattern of PATTERNS) {
+    $("#select-left").append(`<option value="${pattern}">${pattern}</option>`);
+    $("#select-left").on("change", async function() {
+      if (pattern == 'Custom') return;
+      drawPattern(matrix_left, $(this).val(), 'left');
+      await sendToDisplay(true);
+    });
+
+    $("#select-right").append(`<option value="${pattern}">${pattern}</option>`);
+    $("#select-right").on("change", async function() {
+      if (pattern == 'Custom') return;
+      drawPattern(matrix_right, $(this).val(), 'right');
+      await sendToDisplay(true);
+    });
+  }
 });
+
+function drawPattern(matrix, pattern, pos) {
+  for (let col = 0; col < WIDTH; col++) {
+    for (let row = 0; row < HEIGHT; row++) {
+      if (pattern == 'Blank') {
+        matrix[row][col] = 1;
+      } else if (pattern == 'Full') {
+        matrix[row][col] = 0;
+      } else if (pattern == 'Checkerboard') {
+        if (row % 2 == 0)
+          matrix[row][col] = col % 2 == 0;
+        else
+          matrix[row][col] = (col+1) % 2 == 0;
+      } else if (pattern == 'Double Checkerboard') {
+        if (row % 4 < 2)
+          matrix[row][col] = (col+2) % 4 < 2;
+        else
+          matrix[row][col] = (col) % 4 < 2;
+      } else if (pattern == 'Every 2nd Row') {
+          matrix[row][col] = row % 2 != 0;
+      } else if (pattern == 'Every 3rd Row') {
+          matrix[row][col] = row % 3 != 0;
+      } else if (pattern == 'Every 2nd Col') {
+          matrix[row][col] = col % 2 != 0;
+      } else if (pattern == 'Every 3rd Col') {
+          matrix[row][col] = col % 3 != 0;
+      }
+    }
+  }
+  updateMatrix(matrix, pos);
+}
+
+function updateMatrix(matrix, pos) {
+  for (let col = 0; col < WIDTH; col++) {
+    for (let row = 0; row < HEIGHT; row++) {
+      let foo = $(`#${pos}-${row}-${col}`);
+      if (matrix[row][col]) {
+        foo.removeClass('off');
+      } else {
+        foo.addClass('off');
+      }
+    }
+  }
+}
 
 function updateTableLeft() {
 	var width = matrix_left[0].length;
 	var height = matrix_left.length;
 
-  $table_left = populateTable(null, height, width, "");
+  $table_left = populateTable(null, height, width, "left");
 	$('#_grid_left').html('');
 	$('#_grid_left').append($table_left);
 
@@ -54,7 +129,7 @@ function updateTableRight() {
 	var width = matrix_right[0].length;
 	var height = matrix_right.length;
 
-  $table_right = populateTable(null, height, width, "");
+  $table_right = populateTable(null, height, width, "right");
 	$('#_grid_right').html('');
 	$('#_grid_right').append($table_right);
 
@@ -68,21 +143,18 @@ function initOptions() {
 	$('#clearLeftBtn').click(function() {
     matrix_left = createArray(matrix_left.length, matrix_left[0].length);
     updateTableLeft();
-    sendToDisplayLeft(true);
-    sendToDisplayRight(true);
+    sendToDisplay(true);
   });
 	$('#clearRightBtn').click(function() {
     matrix_right = createArray(matrix_right.length, matrix_right[0].length);
     updateTableRight();
-    sendToDisplayLeft(true);
-    sendToDisplayRight(true);
+    sendToDisplay(true);
   });
 	$('#connectLeftBtn').click(connectSerialLeft);
 	$('#connectRightBtn').click(connectSerialRight);
 	$('#swapBtn').click(async function() {
     swap = !swap;
-    await sendToDisplayLeft(true);
-    await sendToDisplayRight(true);
+    await sendToDisplay(true);
   });
 	//$('#sendButton').click(sendToDisplay);
   $(document).on('input change', '#brightnessRange', function() {
@@ -180,23 +252,32 @@ function prepareValsForDrawingRight() {
   return vals;
 }
 
+
+async function sendToDisplay(recurse) {
+    await sendToDisplayLeft(recurse);
+    await sendToDisplayRight(recurse);
+}
+
 async function sendToDisplayLeft(recurse) {
+  if (portLeft === null) return;
+
   let vals = prepareValsForDrawingLeft();
   if (swap) {
     console.log('swapped left to right');
     vals = prepareValsForDrawingRight();
   }
   console.log("Send bytes left:", vals);
-  command(portLeft, DRAW_CMD, vals);
+  await command(portLeft, DRAW_CMD, vals);
 }
 async function sendToDisplayRight(recurse) {
+  if (portRight === null) return;
   let vals = prepareValsForDrawingRight();
   if (swap) {
     console.log('swapped right to left');
     vals = prepareValsForDrawingLeft();
   }
   console.log("Send bytes right:", vals);
-  command(portRight, DRAW_CMD, vals);
+  await command(portRight, DRAW_CMD, vals);
 }
 
 async function connectSerialLeft() {
@@ -242,9 +323,7 @@ function toggleLeft(e) {
 		$(this).removeClass('off');	
 	}
 
-  if (portLeft) {
-    sendToDisplayLeft(true);
-  }
+  sendToDisplay(true);
 
 	return false;
 }
@@ -262,14 +341,12 @@ function toggleRight(e) {
 		$(this).removeClass('off');	
 	}
 
-  if (portRight) {
-    sendToDisplayRight(true);
-  }
+  sendToDisplay(true);
 
 	return false;
 }
 
-function populateTable(table, rows, cells, content) {
+function populateTable(table, rows, cells, pos) {
     if (!table) table = document.createElement('table');
     for (var i = 0; i < rows; ++i) {
         var row = document.createElement('tr');
@@ -277,6 +354,7 @@ function populateTable(table, rows, cells, content) {
             row.appendChild(document.createElement('td'));
             $(row.cells[j]).data('i', i);
             $(row.cells[j]).data('j', j);
+            $(row.cells[j]).attr('id', `${pos}-${i}-${j}`);
         }
         table.appendChild(row);        
     }
