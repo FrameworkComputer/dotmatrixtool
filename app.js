@@ -50,16 +50,14 @@ $(function() {
     $("#select-left").on("change", async function() {
       if (pattern == 'Custom') return;
       drawPattern(matrix_left, $(this).val(), 'left');
-      await sendToDisplayLeft(true);
-      await sendToDisplayRight(true);
+      await sendToDisplay(true);
     });
 
     $("#select-right").append(`<option value="${pattern}">${pattern}</option>`);
     $("#select-right").on("change", async function() {
       if (pattern == 'Custom') return;
       drawPattern(matrix_right, $(this).val(), 'right');
-      await sendToDisplayLeft(true);
-      await sendToDisplayRight(true);
+      await sendToDisplay(true);
     });
   }
 });
@@ -127,21 +125,18 @@ function initOptions() {
 	$('#clearLeftBtn').click(function() {
     matrix_left = createArray(matrix_left.length, matrix_left[0].length);
     updateTableLeft();
-    sendToDisplayLeft(true);
-    sendToDisplayRight(true);
+    sendToDisplay(true);
   });
 	$('#clearRightBtn').click(function() {
     matrix_right = createArray(matrix_right.length, matrix_right[0].length);
     updateTableRight();
-    sendToDisplayLeft(true);
-    sendToDisplayRight(true);
+    sendToDisplay(true);
   });
 	$('#connectLeftBtn').click(connectSerialLeft);
 	$('#connectRightBtn').click(connectSerialRight);
 	$('#swapBtn').click(async function() {
     swap = !swap;
-    await sendToDisplayLeft(true);
-    await sendToDisplayRight(true);
+    await sendToDisplay(true);
   });
 	//$('#sendButton').click(sendToDisplay);
   $(document).on('input change', '#brightnessRange', function() {
@@ -239,23 +234,32 @@ function prepareValsForDrawingRight() {
   return vals;
 }
 
+
+async function sendToDisplay(recurse) {
+    await sendToDisplayLeft(recurse);
+    await sendToDisplayRight(recurse);
+}
+
 async function sendToDisplayLeft(recurse) {
+  if (portLeft === null) return;
+
   let vals = prepareValsForDrawingLeft();
   if (swap) {
     console.log('swapped left to right');
     vals = prepareValsForDrawingRight();
   }
   console.log("Send bytes left:", vals);
-  command(portLeft, DRAW_CMD, vals);
+  await command(portLeft, DRAW_CMD, vals);
 }
 async function sendToDisplayRight(recurse) {
+  if (portRight === null) return;
   let vals = prepareValsForDrawingRight();
   if (swap) {
     console.log('swapped right to left');
     vals = prepareValsForDrawingLeft();
   }
   console.log("Send bytes right:", vals);
-  command(portRight, DRAW_CMD, vals);
+  await command(portRight, DRAW_CMD, vals);
 }
 
 async function connectSerialLeft() {
@@ -301,9 +305,7 @@ function toggleLeft(e) {
 		$(this).removeClass('off');	
 	}
 
-  if (portLeft) {
-    sendToDisplayLeft(true);
-  }
+  sendToDisplay(true);
 
 	return false;
 }
@@ -321,9 +323,7 @@ function toggleRight(e) {
 		$(this).removeClass('off');	
 	}
 
-  if (portRight) {
-    sendToDisplayRight(true);
-  }
+  sendToDisplay(true);
 
 	return false;
 }
