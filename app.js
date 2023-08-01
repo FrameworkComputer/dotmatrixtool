@@ -26,6 +26,11 @@ const PATTERNS = [
   'Blank',
   'Full',
   'Checkerboard',
+  'Double Checkerboard',
+  'Every 2nd Row',
+  'Every 3rd Row',
+  'Every 2nd Col',
+  'Every 3rd Col',
 ];
 
 var matrix_left;
@@ -74,6 +79,19 @@ function drawPattern(matrix, pattern, pos) {
           matrix[row][col] = col % 2 == 0;
         else
           matrix[row][col] = (col+1) % 2 == 0;
+      } else if (pattern == 'Double Checkerboard') {
+        if (row % 4 < 2)
+          matrix[row][col] = (col+2) % 4 < 2;
+        else
+          matrix[row][col] = (col) % 4 < 2;
+      } else if (pattern == 'Every 2nd Row') {
+          matrix[row][col] = row % 2 != 0;
+      } else if (pattern == 'Every 3rd Row') {
+          matrix[row][col] = row % 3 != 0;
+      } else if (pattern == 'Every 2nd Col') {
+          matrix[row][col] = col % 2 != 0;
+      } else if (pattern == 'Every 3rd Col') {
+          matrix[row][col] = col % 3 != 0;
       }
     }
   }
