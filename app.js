@@ -145,6 +145,18 @@ function initOptions() {
     updateTableLeft();
     sendToDisplay(true);
   });
+	$('#wakeBtn').click(function() {
+    wake(portLeft, true);
+    wake(portRight, true);
+  });
+	$('#sleepBtn').click(function() {
+    wake(portLeft, false);
+    wake(portRight, false);
+  });
+	$('#bootloaderBtn').click(function() {
+    bootloader(portLeft);
+    bootloader(portRight);
+  });
 	$('#clearRightBtn').click(function() {
     matrix_right = createArray(matrix_right.length, matrix_right[0].length);
     updateTableRight();
@@ -372,4 +384,28 @@ function createArray(length) {
     }
 
     return arr;
+}
+
+async function wake(port, wake) {
+  await sendCommand(port, 0x03, [wake ? 0 : 1]);
+}
+
+async function bootloader(port) {
+  await sendCommand(port, 0x02, [0]);
+}
+
+async function sendCommand(port, commandId, params) {
+  if (port === null) return;
+
+  const writer = port.writable.getWriter();
+
+  let bytes = [0x32, 0xAC];
+  bytes = bytes.concat([commandId]);
+  bytes = bytes.concat(params);
+  console.log('Params:', bytes);
+
+  const data = new Uint8Array(bytes);
+  await writer.write(data);
+  // Allow the serial port to be closed later.
+  writer.releaseLock();
 }
