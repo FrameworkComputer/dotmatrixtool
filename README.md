@@ -1,24 +1,29 @@
-# Framework Laptop 16 - LED Matrix Input Module
+# Framework Laptop 16 LED Matrix Input Module
 
-This webapp can directly connect to the LED matrix input module.
-You need to be running (a browser based on) Chrome.
+[View it in your browser.](https://ledmatrix.frame.work)
 
-To start, simply open the index.html - there is no server to run.
+This little web app can directly connect to the Framework Laptop 16 LED matrix
+input module. You need to be running a browser based on Chrome (Edge, Chromium,
+Opera, etc.).
 
-Then use the connect button to connect. Drawing on the screen should
-automatically update the LED matrix.
+To start, simply open `index.html`. There is no server to run. If you want, you
+can boot a simple web server with Python: `python3 -m http.server`
 
-Click and drag to draw, CTRL+click to erase.
+Use the "Connect Left" and "Connect Right" buttons to connect to each
+respective input module. Draw on each input browser in your browser, and it
+will automatically update the LED matrix.
 
-Brightness can also be adjusted.
+Click and drag to draw, CTRL + click to erase.
 
-###### More Information
+Brightness can also be adjusted using the slider.
+
+## More Information
 
 - [Framework Laptop 16](https://frame.work/products/laptop16-diy-amd-7040)
 - [LED Matrix Firmware](https://github.com/FrameworkComputer/inputmodule-rs)
 - [LED Matrix Hardware](https://github.com/FrameworkComputer/inputmodules)
 
-###### Dot Matrix Tool
+## Dot Matrix Tool
 
 This repository is based on code from https://github.com/stefangordon/dotmatrixtool.
 See also http://dotmatrixtool.com
@@ -28,3 +33,7 @@ See also http://dotmatrixtool.com
 The application is hosted on Cloudflare Pages and automatically deployed to
 production when code is pushed to the `usbserial` branch and to preview
 application when a pull request is opened.
+
+## Contributing
+
+Contrirbutions are welcome. Submit pull requests to the `usbserial` branch.
