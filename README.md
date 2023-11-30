@@ -42,3 +42,8 @@ When preparing your pull request, please be sure:
 
 1. the tool still works with connected LED Matrix Input Modules
 2. the HTML is still valid (Node.js installation required): `make validate`
+
+## Hosting
+
+The application is hosted on GitHub Pages and automatically deployed when code
+is pushed to the `usbserial` branch.
