@@ -10,8 +10,8 @@ To start, simply open `index.html`. There is no server to run. If you want, you
 can boot a simple web server with Python: `python3 -m http.server`
 
 Use the "Connect Left" and "Connect Right" buttons to connect to each
-respective Input Module. Draw on each input browser in your browser, and it
-will automatically update the LED matrix.
+respective Input Module. Draw on each LED matrix in the web browser, and it
+will automatically update on your physical device.
 
 Click and drag to draw, CTRL + click to erase.
 
