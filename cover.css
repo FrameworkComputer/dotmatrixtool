@@ -37,7 +37,7 @@ body {
   background-color: var(--color-secondary);
   color: var(--color-primary);
   text-align: center;
-  font-family: "Roboto Mono", "Andale Mono", monospace;
+  font-family: "Helvetica", sans-serif;
   font-weight: 400;
 }
 
