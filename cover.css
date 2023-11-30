@@ -71,6 +71,12 @@ select {
   padding-top: 10px;
 }
 
+@media screen and (max-width: 767px) {
+  .cover-container {
+    flex-direction: column;
+  }
+}
+
 #instructions {
   flex-grow: 1;
   display: flex;
