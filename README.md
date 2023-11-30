@@ -1,16 +1,16 @@
-# Framework Laptop 16 LED Matrix Input Module
+# Framework Laptop 16 LED Matrix Input Module Control
 
 [View it in your browser.](https://ledmatrix.frame.work)
 
 This little web app can directly connect to the Framework Laptop 16 LED matrix
-input module. You need to be running a browser based on Chrome (Edge, Chromium,
+Input Module. You need to be running a browser based on Chrome (Edge, Chromium,
 Opera, etc.).
 
 To start, simply open `index.html`. There is no server to run. If you want, you
 can boot a simple web server with Python: `python3 -m http.server`
 
 Use the "Connect Left" and "Connect Right" buttons to connect to each
-respective input module. Draw on each input browser in your browser, and it
+respective Input Module. Draw on each input browser in your browser, and it
 will automatically update the LED matrix.
 
 Click and drag to draw, CTRL + click to erase.
