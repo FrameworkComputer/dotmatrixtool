@@ -92,6 +92,9 @@ select {
 .slider-wrapper {
   margin-top: 10px;
 }
+.slider-wrapper label {
+  font-weight: 500;
+}
 #matrix {
   align-items: stretch;
   display: flex;
