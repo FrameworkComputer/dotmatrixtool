@@ -37,3 +37,8 @@ application when a pull request is opened.
 ## Contributing
 
 Contributions are welcome. Submit pull requests to the `usbserial` branch.
+
+When preparing your pull request, please be sure:
+
+1. the tool still works with connected LED Matrix Input Modules
+2. the HTML is still valid (Node.js installation required): `make validate`
