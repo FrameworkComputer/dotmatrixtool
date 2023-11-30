@@ -3,20 +3,20 @@
  */
 
 :root {
-  --color-primary: #fafafa;
-  --color-primary-dark: #d8d8d8;
-  --color-secondary: #0a0a0a;
+  --color-light: #fafafa;
+  --color-light-darkened: #d8d8d8;
+  --color-dark: #0a0a0a;
 }
 
 /* Links */
 
 a {
   text-decoration: underline;
-  color: var(--color-primary);
+  color: var(--color-light);
 }
 
 a:hover {
-  color: var(--color-primary-dark);
+  color: var(--color-light-darkened);
 }
 
 /* Custom default button */
@@ -34,11 +34,15 @@ a:hover {
  */
 
 body {
-  background-color: var(--color-secondary);
-  color: var(--color-primary);
+  background-color: var(--color-dark);
+  color: var(--color-light);
   text-align: center;
   font-family: "Helvetica", sans-serif;
   font-weight: 400;
+}
+
+select {
+  color: var(--color-dark);
 }
 
 /* Extra markup and styles for table-esque vertical and horizontal centering */
