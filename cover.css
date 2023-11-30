@@ -86,7 +86,11 @@ select {
 }
 #brightnessRange {
   display: inline;
+  height: 9px;
   width: auto;
+}
+.slider-wrapper {
+  margin-top: 10px;
 }
 #matrix {
   align-items: stretch;
