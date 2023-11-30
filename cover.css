@@ -86,6 +86,14 @@ select {
   text-align: center;
 }
 
+#matrix select {
+  margin-bottom: 8px;
+}
+
+.fw-logo {
+  margin-bottom: 24px;
+}
+
 /*
  * Header
  */
