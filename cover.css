@@ -72,6 +72,7 @@ select {
   display: flex;
   flex-direction: column;
   margin: 12px;
+  max-width: 380px;
 }
 #brightnessRange {
   display: inline;
@@ -179,12 +180,11 @@ select {
   .site-wrapper-inner {
     vertical-align: middle;
   }
-  /* Handle the widths */
-  .masthead,
-  .mastfoot,
-  .cover-container {
-    width: 100%; /* Must be percentage or pixels for horizontal alignment */
-  }
+}
+
+.cover-container {
+  width: inherit;
+  margin: 0 auto;
 }
 
 @media (min-width: 992px) {
