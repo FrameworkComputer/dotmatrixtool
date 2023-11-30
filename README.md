@@ -36,4 +36,4 @@ application when a pull request is opened.
 
 ## Contributing
 
-Contrirbutions are welcome. Submit pull requests to the `usbserial` branch.
+Contributions are welcome. Submit pull requests to the `usbserial` branch.
