@@ -1,0 +1,12 @@
+{
+  "name": "Framework Laptop 16 LED Matrix Input Module Control",
+  "start_url": "./index.html",
+  "display": "minimal-ui",
+  "icons": [
+    {
+      "src": "icon-180.png",
+      "type": "image/png",
+      "sizes": "180x180"
+    }
+  ]
+}
