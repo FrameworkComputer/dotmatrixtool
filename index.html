@@ -9,12 +9,14 @@
     <link rel="icon" href="favicon.ico">
 
     <title>Framework Laptop 16 LED Matrix Input Module Control</title>
-    <link href="css/bootstrap.min.css" rel="stylesheet">
 
-    <link rel="manifest" href="manifest.json" />
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="prettify/prettify.css" type="text/css" rel="stylesheet">
+
+    <link rel="manifest" href="manifest.json">
 
     <!-- Custom styles for this template -->
-    <link href="cover.css" rel="stylesheet">    
+    <link href="cover.css" rel="stylesheet">
   </head>
 
   <body>
@@ -33,7 +35,7 @@
 
               <h2>Instructions</h2>
               <!-- instructions -->
-              <p style="text-align: start;">
+              <p>
                 Left mouse button to draw.<br>
                 Right mouse button (or Ctrl+Left) to erase.
               </p>
@@ -41,7 +43,7 @@
                 Steps:
               </p>
 
-              <ol style="text-align: start;">
+              <ol>
                 <li>Connect Input Module(s)</li>
                 <li>Click Connect Button</li>
                 <li>Allow connection and select port<br>(something like ACM0 or COM3)</li>
@@ -55,28 +57,28 @@
                 <p>Left: <span id="fw-version-left">Disconnected</span></p>
                 <p>Right: <span id="fw-version-right">Disconnected</span></p>
               </div>
-              <div class="col-xs-12" style="height:20px;"></div>
 
-              <div>
+              <div class="btn-group">
                 <button type="button" class="btn btn-default" id="connectLeftBtn">Connect Left</button>
                 <button type="button" class="btn btn-default" id="connectRightBtn">Connect Right</button>
                 <button type="button" class="btn btn-default" id="swapBtn">Swap</button>
               </div>
-              <div class="col-xs-12" style="height:20px;"></div>
 
-              <button type="button" class="btn btn-default" id="wakeBtn">Wake</button>
-              <button type="button" class="btn btn-default" id="sleepBtn">Sleep</button>
-              <button type="button" class="btn btn-default" id="bootloaderBtn">Bootloader</button>
-              <div class="col-xs-12" style="height:20px;"></div>
+              <div class="btn-group">
+                <button type="button" class="btn btn-default" id="wakeBtn">Wake</button>
+                <button type="button" class="btn btn-default" id="sleepBtn">Sleep</button>
+                <button type="button" class="btn btn-default" id="bootloaderBtn">Bootloader</button>
+              </div>
+              <div class="col-xs-12"></div>
 
               <p>Brightness:
               <input type="range" id="brightnessRange" min="0" max="255">
               </p>
-              <div class="col-xs-12" style="height:20px;"></div>
 
-              <button type="button" class="btn btn-default" id="clearLeftBtn">Clear Left</button>
-              <button type="button" class="btn btn-default" id="clearRightBtn">Clear Right</button>
-              <div class="col-xs-12" style="height:20px;"></div>
+              <div class="btn-group">
+                <button type="button" class="btn btn-default" id="clearLeftBtn">Clear Left</button>
+                <button type="button" class="btn btn-default" id="clearRightBtn">Clear Right</button>
+              </div>
               <!--<button type="button" class="btn btn-default" id="sendButton">Send</button>-->
             </div>
 
@@ -101,11 +103,11 @@
             <!-- Grid bits -->
             <div>
               <select id="select-left"></select>
-              <div class="_grid" id="_grid_left" oncontextmenu="return false;"></div>
+              <div class="led-grid" id="led-grid_left" oncontextmenu="return false;"></div>
             </div>
             <div>
               <select id="select-right"></select>
-              <div class="_grid" id="_grid_right" oncontextmenu="return false;"></div>
+              <div class="led-grid" id="led-grid_right" oncontextmenu="return false;"></div>
             </div>
           </div>
 
@@ -120,8 +122,7 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="js/jquery.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
-    <link href="prettify/prettify.css" type="text/css" rel="stylesheet" />
-    <script type="text/javascript" src="prettify/prettify.js"></script>
+    <script src="prettify/prettify.js"></script>
     <script src="app.js"></script>
   </body>
 </html>
