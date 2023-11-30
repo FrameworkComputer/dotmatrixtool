@@ -44,7 +44,7 @@ h1 {
 body {
   background-color: var(--color-dark);
   color: var(--color-light);
-  font-family: "Roboto Mono", "Andale Mono", monospace;
+  font-family: "Noto Sans Mono", "Andale Mono", monospace;
   font-weight: 400;
 }
 
