@@ -22,3 +22,9 @@ Brightness can also be adjusted.
 
 This repository is based on code from https://github.com/stefangordon/dotmatrixtool.
 See also http://dotmatrixtool.com
+
+## Hosting
+
+The application is hosted on Cloudflare Pages and automatically deployed to
+production when code is pushed to the `usbserial` branch and to preview
+application when a pull request is opened.
