@@ -3,8 +3,8 @@
  */
 
 :root {
-  --color-light: #fafafa;
-  --color-light-darkened: #d8d8d8;
+  --color-light: #ededed;
+  --color-light-darkened: #cccccc;
   --color-dark: #0a0a0a;
 }
 
@@ -25,8 +25,8 @@ a:hover {
 .btn-default:focus {
   color: #333;
   text-shadow: none; /* Prevent inheritence from `body` */
-  background-color: #fff;
-  border: 1px solid #fff;
+  background-color: var(--color-light);
+  border: 1px solid var(--color-light);
 }
 
 h1 {
@@ -106,7 +106,7 @@ select {
   padding-left: 0;
   font-size: 16px;
   font-weight: 500;
-  color: #fff; /* IE8 proofing */
+  color: var(--color-light); /* IE8 proofing */
   color: rgba(255, 255, 255, 0.75);
   border-bottom: 2px solid transparent;
 }
@@ -119,8 +119,8 @@ select {
 .masthead-nav > .active > a,
 .masthead-nav > .active > a:hover,
 .masthead-nav > .active > a:focus {
-  color: #fff;
-  border-bottom-color: #fff;
+  color: var(--color-light);
+  border-bottom-color: var(--color-light);
 }
 
 @media (min-width: 768px) {
