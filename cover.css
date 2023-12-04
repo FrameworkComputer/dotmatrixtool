@@ -46,6 +46,7 @@ body {
   color: var(--color-light);
   font-family: "Noto Sans Mono", "Andale Mono", monospace;
   font-weight: 400;
+  height: 100vh;
 }
 
 select {
