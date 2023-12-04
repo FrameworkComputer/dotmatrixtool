@@ -2,33 +2,58 @@
  * Globals
  */
 
+:root {
+  --color-light: #ededed;
+  --color-light-darkened: #cccccc;
+  --color-dark: #0a0a0a;
+}
+
 /* Links */
-a,
-a:focus,
+
+a {
+  text-decoration: underline;
+  color: var(--color-light);
+}
+
 a:hover {
-  color: #fff;
+  color: var(--color-light-darkened);
 }
 
 /* Custom default button */
 .btn-default,
 .btn-default:hover,
 .btn-default:focus {
-  color: #333;
+  color: var(--color-dark);
   text-shadow: none; /* Prevent inheritence from `body` */
-  background-color: #fff;
-  border: 1px solid #fff;
+  background-color: var(--color-light);
+  border: 1px solid var(--color-light);
 }
 
+.btn-group > .btn {
+  margin: 4px;
+}
+
+h1 {
+  margin-top: 0;
+}
 
 /*
  * Base structure
  */
 
 body {
-  background-color: #333;
-  text-align: center;
-  font-family: Roboto Mono;
+  background-color: var(--color-dark);
+  color: var(--color-light);
+  font-family: "Noto Sans Mono", "Andale Mono", monospace;
   font-weight: 400;
+}
+
+select {
+  color: var(--color-dark);
+}
+
+strong {
+  font-weight: 500;
 }
 
 /* Extra markup and styles for table-esque vertical and horizontal centering */
@@ -36,8 +61,8 @@ body {
   width: 100%;
   height: 100%; /* For at least Firefox */
   min-height: 100%;
-  -webkit-box-shadow: inset 0 0 100px rgba(0,0,0,.5);
-          box-shadow: inset 0 0 100px rgba(0,0,0,.5);
+  -webkit-box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.5);
+  box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.5);
 }
 .site-wrapper-inner {
   display: flex;
@@ -48,29 +73,47 @@ body {
   display: flex;
   flex-direction: row;
   padding-top: 10px;
-  justify-content: start;
+}
+
+@media screen and (max-width: 767px) {
+  .cover-container {
+    flex-direction: column;
+  }
 }
 
 #instructions {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  gap: 40px;
-  align-items: center;
+  margin: 12px;
+  max-width: 380px;
 }
 #brightnessRange {
   display: inline;
+  height: 9px;
   width: auto;
 }
-#matrix {
-  flex-grow: 2;
-
-  display: flex;
-  justify-content: start;
-  align-items: stretch;
+.slider-wrapper {
+  margin-top: 10px;
 }
-#controls {
-  text-align: start;
+.slider-wrapper label {
+  font-weight: 500;
+}
+#matrix {
+  align-items: stretch;
+  display: flex;
+  flex-grow: 2;
+  gap: 12px;
+  margin: 12px;
+  text-align: center;
+}
+
+#matrix select {
+  margin-bottom: 8px;
+}
+
+.fw-logo {
+  margin-bottom: 24px;
 }
 
 /*
@@ -92,22 +135,22 @@ body {
   padding-right: 0;
   padding-left: 0;
   font-size: 16px;
-  font-weight: bold;
-  color: #fff; /* IE8 proofing */
-  color: rgba(255,255,255,.75);
+  font-weight: 500;
+  color: var(--color-light); /* IE8 proofing */
+  color: rgba(255, 255, 255, 0.75);
   border-bottom: 2px solid transparent;
 }
 .masthead-nav > li > a:hover,
 .masthead-nav > li > a:focus {
   background-color: transparent;
   border-bottom-color: #a9a9a9;
-  border-bottom-color: rgba(255,255,255,.25);
+  border-bottom-color: rgba(255, 255, 255, 0.25);
 }
 .masthead-nav > .active > a,
 .masthead-nav > .active > a:hover,
 .masthead-nav > .active > a:focus {
-  color: #fff;
-  border-bottom-color: #fff;
+  color: var(--color-light);
+  border-bottom-color: var(--color-light);
 }
 
 @media (min-width: 768px) {
@@ -119,7 +162,6 @@ body {
   }
 }
 
-
 /*
  * Cover
  */
@@ -129,9 +171,8 @@ body {
 }
 .cover .btn-lg {
   padding: 10px 20px;
-  font-weight: bold;
+  font-weight: 500;
 }
-
 
 /*
  * Footer
@@ -139,9 +180,8 @@ body {
 
 .mastfoot {
   color: #999; /* IE8 proofing */
-  color: rgba(255,255,255,.5);
+  color: rgba(255, 255, 255, 0.5);
 }
-
 
 /*
  * Affix and center
@@ -161,12 +201,11 @@ body {
   .site-wrapper-inner {
     vertical-align: middle;
   }
-  /* Handle the widths */
-  .masthead,
-  .mastfoot,
-  .cover-container {
-    width: 100%; /* Must be percentage or pixels for horizontal alignment */
-  }
+}
+
+.cover-container {
+  width: inherit;
+  margin: 0 auto;
 }
 
 @media (min-width: 992px) {
@@ -176,25 +215,26 @@ body {
   }
 }
 
-._grid table {
+.led-grid table {
   border-collapse: separate;
   border-spacing: 2px;
-  cursor:crosshair;
+  cursor: crosshair;
 }
 
-._grid table tr td {
+.led-grid table tr td {
   background-color: #a9a9a9;
-  padding:10px;
+  padding: 10px;
 }
 
-._grid table tr td:hover, ._grid table tr td.off:hover {
+.led-grid table tr td:hover,
+.led-grid table tr td.off:hover {
   background-color: #c3c1ff;
-  padding:10px;
+  padding: 10px;
 }
 
-._grid table tr td.off {
+.led-grid table tr td.off {
   background-color: white;
-  padding:10px;
+  padding: 10px;
 }
 
 #_output {
@@ -203,7 +243,7 @@ body {
 
 .footer {
 }
-.footer>div {
+.footer > div {
   text-align: center;
   padding-top: 20px;
 }

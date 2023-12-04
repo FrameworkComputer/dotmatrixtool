@@ -1,19 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <link href='https://fonts.googleapis.com/css?family=Roboto+Mono:400,500' rel='stylesheet' type='text/css'>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <meta name="description" content="An online tool for controlling the Framework LED Matrix">
-    <link rel="icon" href="favicon.png">
+    <meta name="description" content="A web tool for controlling the Framework Laptop 16 LED Matrix Input Module">
+    <link rel="icon" href="favicon.ico">
+    <link href="https://fonts.googleapis.com/css?family=Noto+Sans+Mono:400,500" rel="stylesheet" type="text/css">
 
-    <title>LED Matrix Control</title>
+    <title>Framework Laptop 16 LED Matrix Input Module Control</title>
+
     <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="prettify/prettify.css" type="text/css" rel="stylesheet">
+
+    <link rel="manifest" href="manifest.json">
 
     <!-- Custom styles for this template -->
-    <link href="cover.css" rel="stylesheet">    
+    <link href="cover.css" rel="stylesheet">
   </head>
 
   <body>
@@ -25,56 +29,77 @@
         <div class="cover-container">
 
           <div id="instructions" class="item">
-            <div class="text-muted">
-              <h3><a href="https://github.com/FrameworkComputer/dotmatrixtool">Framework Laptop 16<br>LED Matrix Inputmodule</a></h3>
-              <p>Instructions</p>
-              <!-- instructions -->
-              <p style="text-align: start;">
-                Left mouse button to draw.<br>
-                Right mouse button (or ctrl+left) to erase.
+            <div>
+              <img class="fw-logo" alt="cog icon next to 'framework'" width="160" height="21" src="framework-logo.svg">
 
+              <h1>LED Matrix Input Module Control</h1>
+
+              <h2>Instructions</h2>
+              <!-- instructions -->
+              <p>
+                Left mouse button to draw.<br>
+                Right mouse button (or Ctrl+Left) to erase.
               </p>
               <p>
                 Steps:
               </p>
 
-              <ol style="text-align: start;">
-                <li>Connect Module</li>
-                <li>Click Connect Button</li>
+              <ol>
+                <li>Connect Input Module(s)</li>
+                <li>Click Connect button for a given side</li>
                 <li>Allow connection and select port<br>(something like ACM0 or COM3)</li>
                 <li>Start drawing</li>
               </ol>
             </div>
 
-            <div id="controls" class="text-muted">
+            <div id="controls">
               <div>
-                <p style="text-align: center;">Device Information</p>
-                <p>Left: <span id="fw-version-left">Disconnected</span></p>
-                <p>Right: <span id="fw-version-right">Disconnected</span></p>
+                <h2>Device Information</h2>
+                <p><strong>Left:</strong> <span id="fw-version-left">Disconnected</span></p>
+                <p><strong>Right:</strong> <span id="fw-version-right">Disconnected</span></p>
               </div>
-              <div class="col-xs-12" style="height:20px;"></div>
 
-              <div>
+              <div class="btn-group">
                 <button type="button" class="btn btn-default" id="connectLeftBtn">Connect Left</button>
                 <button type="button" class="btn btn-default" id="connectRightBtn">Connect Right</button>
                 <button type="button" class="btn btn-default" id="swapBtn">Swap</button>
               </div>
-              <div class="col-xs-12" style="height:20px;"></div>
 
-              <button type="button" class="btn btn-default" id="wakeBtn">Wake</button>
-              <button type="button" class="btn btn-default" id="sleepBtn">Sleep</button>
-              <button type="button" class="btn btn-default" id="bootloaderBtn">Bootloader</button>
-              <div class="col-xs-12" style="height:20px;"></div>
+              <div class="btn-group">
+                <button type="button" class="btn btn-default" id="wakeBtn">Wake</button>
+                <button type="button" class="btn btn-default" id="sleepBtn">Sleep</button>
+                <button type="button" class="btn btn-default" id="bootloaderBtn">Bootloader</button>
+              </div>
 
-              <p>Brightness:
-              <input type="range" id="brightnessRange" min="0" max="255">
+              <p class="slider-wrapper">
+                <label for="brightnessRange">Brightness:</label>
+                <input type="range" id="brightnessRange" min="0" max="255">
               </p>
-              <div class="col-xs-12" style="height:20px;"></div>
 
-              <button type="button" class="btn btn-default" id="clearLeftBtn">Clear Left</button>
-              <button type="button" class="btn btn-default" id="clearRightBtn">Clear Right</button>
-              <div class="col-xs-12" style="height:20px;"></div>
+              <div class="btn-group">
+                <button type="button" class="btn btn-default" id="clearLeftBtn">Clear Left</button>
+                <button type="button" class="btn btn-default" id="clearRightBtn">Clear Right</button>
+              </div>
               <!--<button type="button" class="btn btn-default" id="sendButton">Send</button>-->
+            </div>
+
+            <div>
+              <h2>Learn More</h2>
+
+              <ul>
+                <li>
+                  <a href="https://github.com/FrameworkComputer/dotmatrixtool/archive/refs/heads/usbserial.zip">Download offline version</a>
+                </li>
+                <li>
+                  <a href="https://github.com/FrameworkComputer/dotmatrixtool">View the source</a>
+                </li>
+                <li>
+                  <a href="https://frame.work">Find more Framework products</a>
+                </li>
+                <li>
+                  Thanks to <a href="https://github.com/stefangordon/dotmatrixtool">stefangordon for their dotmatrixtool</a>, which this project is a fork of.
+                </li>
+              </ul>
             </div>
           </div>
 
@@ -82,21 +107,15 @@
             <!-- Grid bits -->
             <div>
               <select id="select-left"></select>
-              <div class="_grid" id="_grid_left" oncontextmenu="return false;"></div>
+              <div class="led-grid" id="led-grid_left" oncontextmenu="return false;"></div>
             </div>
             <div>
               <select id="select-right"></select>
-              <div class="_grid" id="_grid_right" oncontextmenu="return false;"></div>
+              <div class="led-grid" id="led-grid_right" oncontextmenu="return false;"></div>
             </div>
           </div>
 
         </div>
-
-        <!-- footer -->
-        <footer class="footer">
-          <p class="text-muted">
-            Offline Tool Download: <a href="https://github.com/FrameworkComputer/dotmatrixtool/archive/refs/heads/usbserial.zip">Here</a>
-        </footer>
 
       </div>
 
@@ -107,8 +126,7 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="js/jquery.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
-    <link href="prettify/prettify.css" type="text/css" rel="stylesheet" />
-    <script type="text/javascript" src="prettify/prettify.js"></script>
+    <script src="prettify/prettify.js"></script>
     <script src="app.js"></script>
   </body>
 </html>
