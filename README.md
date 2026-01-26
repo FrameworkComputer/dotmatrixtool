@@ -17,6 +17,15 @@ Click and drag to draw, CTRL + click to erase.
 
 Brightness can also be adjusted using the slider.
 
+## Features
+
+- Import/export capability for matrix patterns
+  - Matrix values are saved as a 34 by 9 byte array
+- Persist button
+  - Continually wakes the matrix when selected, so the display does not turn off
+- Export for Software
+  - Export patterns in column-major format (9x34) with binary or grayscale values
+
 ## More Information
 
 - [Framework Laptop 16](https://frame.work/products/laptop16-diy-amd-7040)

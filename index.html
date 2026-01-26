@@ -70,7 +70,9 @@
                 <button type="button" class="btn btn-default" id="sleepBtn">Sleep</button>
                 <button type="button" class="btn btn-default" id="bootloaderBtn">Bootloader</button>
               </div>
-
+              <div class="btn-group">
+                <input type="checkbox" id="persistCb" class="btn btn-default">Keep Awake
+              </div>
               <p class="slider-wrapper">
                 <label for="brightnessRange">Brightness:</label>
                 <input type="range" id="brightnessRange" min="0" max="255">
@@ -80,8 +82,31 @@
                 <button type="button" class="btn btn-default" id="clearLeftBtn">Clear Left</button>
                 <button type="button" class="btn btn-default" id="clearRightBtn">Clear Right</button>
               </div>
-              <!--<button type="button" class="btn btn-default" id="sendButton">Send</button>-->
-            </div>
+              <div class="btn-group">
+                <button type="button" class="btn btn-default" id="importLeftBtn">Import Left</button>
+                <button type="button" class="btn btn-default" id="importRightBtn">Import Right</button>
+              </div>
+              <div class="btn-group">
+                  <button type="button" class="btn btn-default" id="exportLeftBtn">Export Left</button>
+                  <button type="button" class="btn btn-default" id="exportRightBtn">Export Right</button>
+              </div>
+              <div class="export-section">
+                <h3>Export for Software</h3>
+
+                <div class="radio-group">
+                  <label><input type="radio" name="exportFormat" value="binary"> Binary (0/1)</label>
+                  <label><input type="radio" name="exportFormat" value="grayscale" checked> Grayscale (0-255)</label>
+                </div>
+
+                <p>Layout: fixed column-major (9x34), matching the LED matrix orientation.</p>
+
+                <div class="btn-group">
+                  <button type="button" class="btn btn-default" id="exportLeftSoftwareBtn">Export Left (JSON)</button>
+                  <button type="button" class="btn btn-default" id="exportRightSoftwareBtn">Export Right (JSON)</button>
+                </div>
+              </div>
+                <!--<button type="button" class="btn btn-default" id="sendButton">Send</button>-->
+              </div>
 
             <div>
               <h2>Learn More</h2>

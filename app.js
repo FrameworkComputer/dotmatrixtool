@@ -20,6 +20,7 @@ const VERSION_CMD = 0x20;
 
 const WIDTH = 9;
 const HEIGHT = 34;
+const WAKE_LOOP_INTERVAL_MSEC = 50_000
 
 const double_words = ['','','Double ','Triple ','Quad '];
 const patterns = {
@@ -101,15 +102,19 @@ var msbendian = false;
 let portLeft = null;
 let portRight = null;
 let swap = false;
+let persist = false
 
 $(function() {
   matrix_left = createArray(34, 9);
   matrix_right = createArray(34, 9);
+
   updateTableLeft();
   updateTableRight();
   initOptions();
+  initSoftwareExportOptions();
+  startWakeLoop()
 
-  for (pattern of PATTERNS) {
+  for (const pattern of PATTERNS) {
     $("#select-left").append(`<option value="${pattern}">${pattern}</option>`);
     $("#select-left").on("change", async function() {
       if (pattern == 'Custom') return;
@@ -210,6 +215,18 @@ function initOptions() {
     updateTableLeft();
     sendToDisplay(true);
   });
+  $('#importLeftBtn').click(function() {
+   importMatrixLeft();
+  });
+   $('#importRightBtn').click(function() {
+   importMatrixRight();
+  });
+   $('#exportLeftBtn').click(function() {
+    exportMatrixLeft();
+  });
+   $('#exportRightBtn').click(function() {
+    exportMatrixRight();
+  });
 	$('#wakeBtn').click(function() {
     wake(portLeft, true);
     wake(portRight, true);
@@ -217,6 +234,9 @@ function initOptions() {
 	$('#sleepBtn').click(function() {
     wake(portLeft, false);
     wake(portRight, false);
+  });
+  $('#persistCb').click(function() {
+    persist = !persist;
   });
 	$('#bootloaderBtn').click(function() {
     bootloader(portLeft);
@@ -241,6 +261,49 @@ function initOptions() {
     command(portLeft, BRIGHTNESS_CMD, brightness);
     command(portRight, BRIGHTNESS_CMD, brightness);
   });
+}
+
+function initSoftwareExportOptions() {
+  $('#exportLeftSoftwareBtn').click(function() {
+    const grayscale = $('input[name="exportFormat"]:checked').val() !== 'binary';
+    exportMatrixSoftware(matrix_left, 'left', grayscale);
+  });
+
+  $('#exportRightSoftwareBtn').click(function() {
+    const grayscale = $('input[name="exportFormat"]:checked').val() !== 'binary';
+    exportMatrixSoftware(matrix_right, 'right', grayscale);
+  });
+}
+
+function exportMatrixSoftware(matrix, side, grayscale = true) {
+  const width = matrix[0].length;   // 9
+  const height = matrix.length;     // 34
+
+  // Fixed column-major: 9 columns x 34 rows
+  const vals = Array(width).fill(0).map(() => Array(height).fill(0));
+  for (let col = 0; col < width; col++) {
+    for (let row = 0; row < height; row++) {
+      const isLit = matrix[row][col] === 0;  // LED on
+      if (grayscale) {
+        vals[col][row] = isLit ? 255 : 0;
+      } else {
+        vals[col][row] = isLit ? 1 : 0;
+      }
+    }
+  }
+
+  const formatStr = grayscale ? 'grayscale' : 'binary';
+  const filename = `matrix_${side}_${formatStr}_colmajor.json`;
+
+  const blob = new Blob([JSON.stringify(vals, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 async function command(port, id, params) {
@@ -293,6 +356,7 @@ async function checkFirmwareVersion(port, side) {
   reader.releaseLock();
 }
 
+//Get matrix values encoded as a 39-byte array
 function prepareValsForDrawingLeft() {
 	const width = matrix_left[0].length;
 	const height = matrix_left.length;
@@ -311,6 +375,7 @@ function prepareValsForDrawingLeft() {
   return vals;
 }
 
+//Get matrix values encoded as a 39-byte array
 function prepareValsForDrawingRight() {
 	const width = matrix_right[0].length;
 	const height = matrix_right.length;
@@ -329,6 +394,130 @@ function prepareValsForDrawingRight() {
   return vals;
 }
 
+//Get matrix values set directly in a 34 x 9 item array
+function getRawVals(matrix) {
+	const width = matrix[0].length;
+	const height = matrix.length;
+
+  let vals = new Array(height)
+  for (const i in [...Array(height).keys()]) {
+    vals[i] = Array(width).fill(0)
+  }
+
+  for (let col = 0; col < width; col++) {
+    for (let row = 0; row < height; row++) {
+      const cell = matrix[row][col];
+      vals[row][col] = (cell == null || cell == 1) ? 0 : 1
+    }
+  }
+  return vals;
+}
+
+//Set matrix values by decoding a 39-byte array
+function setMatrixFromVals(matrix, vals) {
+  const width = matrix[0].length;
+  const height = matrix.length;
+
+  for (let row = 0; row < height; row++) {
+    for (let col = 0; col < width; col++) {
+      const i = col + row * width;
+      const val = vals[Math.trunc(i/8)]
+      const bit = (val >> i % 8) & 1;
+      matrix[row][col] = (bit + 1) % 2;
+    }
+  }
+}
+
+//Set matrix values from a 34 x 9 item array
+function setMatrixFromRawVals(matrix, vals) {
+  const width = matrix[0].length;
+  const height = matrix.length;
+
+  for (let row = 0; row < height; row++) {
+    for (let col = 0; col < width; col++) {
+      matrix[row][col] = vals[row][col] ? 0 : 1;
+    }
+  }
+}
+
+function exportMatrixLeft() {
+  // Export as 34x9 2D array
+  const vals = getRawVals(matrix_left);
+  const blob = new Blob([JSON.stringify(vals)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "matrix_left.json";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function exportMatrixRight() {
+  // Export as 34x9 2D array
+  const vals = getRawVals(matrix_right);
+  console.log('Exported values')
+  console.log(vals)
+  const blob = new Blob([JSON.stringify(vals)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "matrix_right.json";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function importMatrixLeft() {
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = ".json";
+  input.onchange = async function (event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const vals = JSON.parse(e.target.result);
+      if (vals[0].length > 1) {
+        setMatrixFromRawVals(matrix_left, vals)
+      } else {
+        setMatrixFromVals(matrix_left, vals);
+      }
+      updateMatrix(matrix_left, 'left')
+      sendToDisplay(true);
+      $("#select-left").val('Custom');
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+function importMatrixRight() {
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = ".json";
+  input.onchange = async function (event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const vals = JSON.parse(e.target.result);
+      if (vals[0].length > 1) {
+        setMatrixFromRawVals(matrix_right, vals)
+      } else {
+        setMatrixFromVals(matrix_right, vals);
+      }
+      updateMatrix(matrix_right, 'right')
+      sendToDisplay(true);
+       $("#select-right").val('Custom');
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
 
 async function sendToDisplay(recurse) {
     await sendToDisplayLeft(recurse);
@@ -449,6 +638,15 @@ function createArray(length) {
     }
 
     return arr;
+}
+
+function startWakeLoop() {
+  setInterval(() => {
+    if (persist) {
+      wake(portLeft, true);
+      wake(portRight, true);
+    }
+  }, WAKE_LOOP_INTERVAL_MSEC)
 }
 
 async function wake(port, wake) {
