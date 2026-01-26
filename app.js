@@ -68,6 +68,26 @@ const patterns = {
       return Math.abs(adjustedRow - centerRow) + Math.abs(col - centerCol) < size;
     },
   },
+  'Scatter 50%': {
+    fn: ({ matrix }) => {
+      // Start blank
+      for (let row = 0; row < HEIGHT; row++)
+        for (let col = 0; col < WIDTH; col++)
+          matrix[row][col] = 1;
+
+      // Place a fixed number of random dots (50%)
+      const count = Math.floor((WIDTH * HEIGHT) / 2);
+      let placed = 0;
+      while (placed < count) {
+        const row = Math.floor(Math.random() * HEIGHT);
+        const col = Math.floor(Math.random() * WIDTH);
+        if (matrix[row][col] === 1) {
+          matrix[row][col] = 0;
+          placed++;
+        }
+      }
+    },
+  },
 };
 
 const PATTERNS = Object.keys(patterns);
