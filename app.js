@@ -21,17 +21,76 @@ const VERSION_CMD = 0x20;
 const WIDTH = 9;
 const HEIGHT = 34;
 
-const PATTERNS = [
-  'Custom',
-  'Blank',
-  'Full',
-  'Checkerboard',
-  'Double Checkerboard',
-  'Every 2nd Row',
-  'Every 3rd Row',
-  'Every 2nd Col',
-  'Every 3rd Col',
-];
+const double_words = ['','','Double ','Triple ','Quad '];
+const patterns = {
+  Blank: {
+    each: (row, col) => 1,
+  },
+  Full: {
+    each: (row, col) => 0,
+  },
+  ...[1,2,3,4].reduce((o, n) => {
+    o[`${double_words[n]}Checkerboard`] = {
+      each: (row, col) => (row % (2 * n) < n)
+            ? (col + n) % (2 * n) < n
+            : col % (2 * n) < n,
+    };
+    return o;
+  }, {}),
+  ...[1,2,3,4].reduce((o, n) => {
+    o[`${double_words[n]}Diagonal Lines`] = {
+      each: (row, col) => Math.floor((row + col) / n) % 2 == 0,
+    };
+    return o;
+  }, {}),
+  'Every 2nd Row': {
+    each: (row, col) => row % 2 !== 0,
+  },
+  'Every 3rd Row': {
+    each: (row, col) => row % 3 !== 0,
+  },
+  'Every 2nd Col': {
+    each: (row, col) => col % 2 !== 0,
+  },
+  'Every 3rd Col': {
+    each: (row, col) => col % 3 !== 0,
+  },
+  'Diamond Pattern': {
+    each: (row, col) => {
+      const size = 5;
+      const repeatHeight = 10; // Adjust this value to control vertical repetition
+      const totalCols = WIDTH;     // Width of your LED matrix
+
+      const centerCol = Math.floor(totalCols / 2);
+      const adjustedRow = row % repeatHeight;
+      const centerRow = Math.floor(repeatHeight / 2);
+
+      return Math.abs(adjustedRow - centerRow) + Math.abs(col - centerCol) < size;
+    },
+  },
+  'Scatter 50%': {
+    fn: ({ matrix }) => {
+      // Start blank
+      for (let row = 0; row < HEIGHT; row++)
+        for (let col = 0; col < WIDTH; col++)
+          matrix[row][col] = 1;
+
+      // Place a fixed number of random dots (50%)
+      const count = Math.floor((WIDTH * HEIGHT) / 2);
+      let placed = 0;
+      while (placed < count) {
+        const row = Math.floor(Math.random() * HEIGHT);
+        const col = Math.floor(Math.random() * WIDTH);
+        if (matrix[row][col] === 1) {
+          matrix[row][col] = 0;
+          placed++;
+        }
+      }
+    },
+  },
+};
+
+const PATTERNS = Object.keys(patterns);
 
 var matrix_left;
 var matrix_right;
@@ -67,32 +126,38 @@ $(function() {
   }
 });
 
-function drawPattern(matrix, pattern, pos) {
+const makeCell = ({ matrix }) => ({ row, col }) => {
+  return {
+    row,
+    col,
+    set (v) {
+      matrix[row][col] = v;
+    }
+  }
+}
+
+const patternIter = function * ({ matrix }) {
   for (let col = 0; col < WIDTH; col++) {
-    for (let row = 0; row < HEIGHT; row++) {
-      if (pattern == 'Blank') {
-        matrix[row][col] = 1;
-      } else if (pattern == 'Full') {
-        matrix[row][col] = 0;
-      } else if (pattern == 'Checkerboard') {
-        if (row % 2 == 0)
-          matrix[row][col] = col % 2 == 0;
-        else
-          matrix[row][col] = (col+1) % 2 == 0;
-      } else if (pattern == 'Double Checkerboard') {
-        if (row % 4 < 2)
-          matrix[row][col] = (col+2) % 4 < 2;
-        else
-          matrix[row][col] = (col) % 4 < 2;
-      } else if (pattern == 'Every 2nd Row') {
-          matrix[row][col] = row % 2 != 0;
-      } else if (pattern == 'Every 3rd Row') {
-          matrix[row][col] = row % 3 != 0;
-      } else if (pattern == 'Every 2nd Col') {
-          matrix[row][col] = col % 2 != 0;
-      } else if (pattern == 'Every 3rd Col') {
-          matrix[row][col] = col % 3 != 0;
+    for (let row = 0; row < HEIGHT; row++){
+      yield makeCell({ matrix })({ row, col });
+    }
+  }
+}
+
+function drawPattern(matrix, pattern, pos) {
+  if (patterns[pattern]) {
+    // Support patterns with an 'each' function defined.
+    // These are patterns defined by a simple expression on (row, col).
+    if (patterns[pattern].each) {
+      for (const cell of patternIter({ matrix })) {
+        cell.set(patterns[pattern].each(cell.row, cell.col));
       }
+    }
+    // Support patterns with an 'fn' function defined.
+    // These are patterns which have their own iterators, which can be
+    // useful for recursion or carrying state across iterations.
+    else if (patterns[pattern].fn) {
+      patterns[pattern].fn({ matrix });
     }
   }
   updateMatrix(matrix, pos);
